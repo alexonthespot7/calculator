@@ -1,23 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
 
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { AppBar, Typography, Toolbar, Box } from '@mui/material';
+
+import Calculator from './Components/Calculator';
+
 function App() {
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#1976d2',
+      },
+    },
+  });
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ThemeProvider theme={darkTheme}>
+        <AppBar position="static" color="primary" style={{marginBottom: 50}}>
+          <Toolbar>
+            <Box sx={{ flexGrow: 0.5 }} />
+            <Typography variant="h6" noWrap component="div" >
+              Calculator
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </ThemeProvider>
+      <Calculator />
     </div>
   );
 }
