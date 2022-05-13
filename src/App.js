@@ -1,35 +1,22 @@
 import './App.css';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { AppBar, Typography, Toolbar, Box } from '@mui/material';
-
 import Calculator from './Components/Calculator';
+import Header from './Components/Header';
+import bcground2 from './assets/bcground2.mp4';
 
 function App() {
-
-  const darkTheme = createTheme({
-    palette: {
-      mode: 'dark',
-      primary: {
-        main: '#1976d2',
-      },
-    },
-  });
-
   return (
-    <div className="App">
-      <ThemeProvider theme={darkTheme}>
-        <AppBar position="static" color="primary" style={{marginBottom: 50}}>
-          <Toolbar>
-            <Box sx={{ flexGrow: 0.5 }} />
-            <Typography variant="h6" noWrap component="div" >
-              Calculator
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </ThemeProvider>
-      <Calculator />
+    <div className='App'>
+      <video autoPlay loop muted>
+        <source src={bcground2} type='video/mp4' />
+      </video>
+      <div className='App-header'></div>
+      <div>
+        <Header />
+        <Calculator />
+      </div>
     </div>
+    
   );
 }
 

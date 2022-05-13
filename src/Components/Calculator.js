@@ -122,8 +122,62 @@ export default function Calculator() {
   };
 
   const handlePercentage = () => {
-    alert('Congratulations, you are pots!');
+    let newValue;
+    let flagDecimals = false;
+    let decimals;
+    let previousValue;
 
+    if (!isOperated) {
+        previousValue = firstValue;
+    } else {
+        if (isOperated && secondValue === '') {
+            previousValue = firstValue
+        } else {
+            previousValue = secondValue;
+        }
+    }
+
+    if (previousValue[previousValue.length - 1] === '.') {
+        newValue = Number(previousValue.slice(0, -1));
+    } else if (previousValue === '' | previousValue === '-') {
+        newValue = 0;
+    } else {
+        if (previousValue.includes('.')) {
+            flagDecimals = true;
+            decimals = previousValue.length - previousValue.indexOf('.');
+        };
+        newValue = Number(previousValue);
+    };
+
+    if (flagDecimals) {
+        newValue = String(Math.round(newValue * 10 ** (decimals - 1)) / (100 * 10 ** (decimals - 1)));
+    } else {
+        newValue = String(newValue / 100);
+    }
+
+    if (newValue.includes('e')) {
+        newValue = 'NaN';
+    } else {
+        if (newValue.length > 12) {
+            if (newValue.includes('.')) {
+                if (newValue.indexOf('.') === 11) {
+                    newValue = String(Math.round(Number(newValue)));
+                } else {
+                    newValue = newValue.substring(0, 12);
+                }
+            } else {
+                newValue = 'NaN';
+            }
+        } else if (newValue === '0') {
+            newValue = '';
+        }
+    };
+    
+    if (!isOperated) {
+        setFirstValue(newValue);
+    } else if (operationType === '/' | operationType === '*') {
+        setSecondValue(newValue);
+    }
   }
 
   const handleButtonClick = (newValue) => {
@@ -252,28 +306,32 @@ export default function Calculator() {
             x = Number(firstValue);
         };
     
-        if (secondValue[secondValue.length - 1] === '.') {
-            y = Number(secondValue.slice(0, -1));
-        } else if (secondValue === '' | secondValue === '-') {
-            y = 0;
+        if (secondValue === '') {
+            y = x;
         } else {
-            if (secondValue.includes('.')) {
-                flagDecimals = true;
-                yDecimals = secondValue.length - secondValue.indexOf('.');
-            }
-            y = Number(secondValue);
-        };
+            if (secondValue[secondValue.length - 1] === '.') {
+                y = Number(secondValue.slice(0, -1));
+            } else if (secondValue === '-') {
+                y = 0;
+            } else {
+                if (secondValue.includes('.')) {
+                    flagDecimals = true;
+                    yDecimals = secondValue.length - secondValue.indexOf('.');
+                }
+                y = Number(secondValue);
+            };
+        }
     
         if (operationType === '/') {
             if (flagDecimals) {
                 if (xDecimals > yDecimals) {
-                    x = x * (10 ** xDecimals);
-                    y = y * (10 ** xDecimals);
-                    sum = (x / y) / (10 ** (2 * xDecimals));
+                    x = Math.round(x * (10 ** (xDecimals - 1)));
+                    y = Math.round(y * (10 ** (xDecimals - 1)));
+                    sum = (x / y);
                 } else {
-                    x = x * (10 ** yDecimals);
-                    y = y * (10 ** yDecimals);
-                    sum = (x / y) / (10 ** (2 * yDecimals));
+                    x = Math.round(x * (10 ** (yDecimals - 1)));
+                    y = Math.round(y * (10 ** (yDecimals - 1)));
+                    sum = (x / y);
                 }
             } else {
                 sum = x / y;
@@ -281,13 +339,13 @@ export default function Calculator() {
         } else if (operationType === '*') {
             if (flagDecimals) {
                 if (xDecimals > yDecimals) {
-                    x = x * (10 ** xDecimals);
-                    y = y * (10 ** xDecimals);
-                    sum = (x * y) / (10 ** (2 * xDecimals));
+                    x = Math.round(x * (10 ** (xDecimals - 1)));
+                    y = Math.round(y * (10 ** (xDecimals - 1)));
+                    sum = (x * y) / (10 ** (2 * (xDecimals - 1)));
                 } else {
-                    x = x * (10 ** yDecimals);
-                    y = y * (10 ** yDecimals);
-                    sum = (x * y) / (10 ** (2 * yDecimals));
+                    x = Math.round(x * (10 ** (yDecimals - 1)));
+                    y = Math.round(y * (10 ** (yDecimals - 1)));
+                    sum = (x * y) / (10 ** (2 * (yDecimals - 1)));
                 }
             } else {
                 sum = x * y;
@@ -295,13 +353,13 @@ export default function Calculator() {
         } else if (operationType === '-') {
             if (flagDecimals) {
                 if (xDecimals > yDecimals) {
-                    x = x * (10 ** xDecimals);
-                    y = y * (10 ** xDecimals);
-                    sum = (x - y) / (10 ** xDecimals);
+                    x = Math.round(x * (10 ** (xDecimals - 1)));
+                    y = Math.round(y * (10 ** (xDecimals - 1)));
+                    sum = (x - y) / (10 ** (xDecimals - 1));
                 } else {
-                    x = x * (10 ** yDecimals);
-                    y = y * (10 ** yDecimals);
-                    sum = (x - y) / (10 ** yDecimals);
+                    x = Math.round(x * (10 ** (yDecimals - 1)));
+                    y = Math.round(y * (10 ** (yDecimals - 1)));
+                    sum = (x - y) / (10 ** (yDecimals - 1));
                 }
             } else {
                 sum = x - y;
@@ -309,13 +367,13 @@ export default function Calculator() {
         } else if (operationType === '+') {
             if (flagDecimals) {
                 if (xDecimals > yDecimals) {
-                    x = x * (10 ** xDecimals);
-                    y = y * (10 ** xDecimals);
-                    sum = (x + y) / (10 ** xDecimals);
+                    x = Math.round(x * (10 ** (xDecimals - 1)));
+                    y = Math.round(y * (10 ** (xDecimals - 1)));
+                    sum = (x + y) / (10 ** (xDecimals - 1));
                 } else {
-                    x = x * (10 ** yDecimals);
-                    y = y * (10 ** yDecimals);
-                    sum = (x + y) / (10 ** yDecimals);
+                    x = Math.round(x * (10 ** (yDecimals - 1)));
+                    y = Math.round(y * (10 ** (yDecimals - 1)));
+                    sum = (x + y) / (10 ** (yDecimals - 1));
                 }
             } else {
                 sum = x + y;
@@ -324,20 +382,24 @@ export default function Calculator() {
 
         sum = String(sum);
 
-        if (sum.length > 12) {
-            if (sum.includes('.')) {
-                if (sum.indexOf('.') === 11) {
-                    sum = String(Math.round(Number(sum)));
-                } else {
-                    sum = sum.substring(0, 12);
-                }
-            } else {
-                sum = 'NaN';
-            }
-        } else if (sum === 'Infinity' | sum === '-Infinity') {
+        if (sum.includes('e')) {
             sum = 'NaN';
-        } else if (sum === '0') {
-            sum = '';
+        } else {
+            if (sum.length > 12) {
+                if (sum.includes('.')) {
+                    if (sum.indexOf('.') === 11) {
+                        sum = String(Math.round(Number(sum)));
+                    } else {
+                        sum = sum.substring(0, 12);
+                    }
+                } else {
+                    sum = 'NaN';
+                }
+            } else if (sum === 'Infinity' | sum === '-Infinity') {
+                sum = 'NaN';
+            } else if (sum === '0') {
+                sum = '';
+            }
         };
 
         if (initialOperation !== '' && sum !== 'NaN') {
@@ -444,7 +506,8 @@ export default function Calculator() {
           borderRadius: 3,
           height: 500,
           width: 305,
-          margin: 'auto'
+          margin: 'auto',
+          mb: 10
         }}
     >
         
@@ -458,7 +521,7 @@ export default function Calculator() {
                 <Fab onClick={() => handleDeletion()}>
                     <BackspaceOutlinedIcon />
                 </Fab>
-                <Fab onClick={handlePercentage}>
+                <Fab onClick={() => handlePercentage()}>
                     <PercentOutlinedIcon />
                 </Fab>
                 <Fab sx={{bgcolor: '#ffa726', color: '#fff'}} onClick={() => handleOperation('/')}>
