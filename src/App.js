@@ -1,20 +1,17 @@
 import './App.css';
 
-import Calculator from './Components/Calculator';
-import Header from './Components/Header';
-import bcground2 from './assets/bcground2.mp4';
+import { useState } from 'react';
+
+import DarkAll from './Components/DarkAll';
+import LightAll from './Components/LightAll';
 
 function App() {
+  const [theme, setTheme] = useState('dark');
+
   return (
     <div className='App'>
-      <video autoPlay loop muted>
-        <source src={bcground2} type='video/mp4' />
-      </video>
-      <div className='App-header'></div>
-      <div>
-        <Header />
-        <Calculator />
-      </div>
+      {theme==='dark' && <DarkAll setTheme={setTheme} />}
+      {theme==='light' && <LightAll setTheme={setTheme} />}
     </div>
     
   );
