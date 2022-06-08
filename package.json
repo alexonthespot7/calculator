@@ -1,6 +1,10 @@
 {
   "name": "alexcalculator",
   "version": "0.1.0",
+  "engines": {
+    "node": "16.15.1",
+    "npm": "8.11.0"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.0",
