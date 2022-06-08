@@ -3,6 +3,8 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import ThemeContext from '../contexts/ThemeContext';
+
 const theme = createTheme({
     palette: {
       secondary: {
@@ -12,8 +14,9 @@ const theme = createTheme({
     },
 });
 
-export default function LightMenu({ setThemes }) {
+export default function LightMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { setTheme } = React.useContext(ThemeContext);
   
   const open = Boolean(anchorEl);
 
@@ -26,14 +29,13 @@ export default function LightMenu({ setThemes }) {
   };
 
   const handleThemeD = () => {
-    setThemes('dark');
+    setTheme('dark');
     setAnchorEl(null);
   };
 
   const handleThemeL = () => {
-    setThemes('light');
+    setTheme('light');
     setAnchorEl(null);
-    alert('sasdad');
   };
 
   return (

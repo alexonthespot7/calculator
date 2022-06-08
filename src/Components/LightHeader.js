@@ -16,7 +16,7 @@ const lightTheme = createTheme({
     },
 });
 
-function LightHeader({ setTheme }) {
+function LightHeader() {
 
   return (
     <>
@@ -26,13 +26,13 @@ function LightHeader({ setTheme }) {
       <div className='App-light-header'></div>
       <ThemeProvider theme={lightTheme}>
         <div className="App">
-          <AppBar position="static" style={{marginBottom: 50}} color='primary'>
+          <AppBar position="static" style={{marginBottom: 70}} color='primary'>
             <Toolbar>
                 <Typography variant="h6" noWrap component="div">
                 Calculator
                 </Typography>
                 <Box sx={{flexGrow: 1}} />
-                <LightMenu setThemes={setTheme} />
+                <LightMenu />
             </Toolbar>
           </AppBar>
         </div>

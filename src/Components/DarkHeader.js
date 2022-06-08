@@ -6,7 +6,7 @@ import { AppBar, Typography, Toolbar, Box, Button, Stack } from '@mui/material';
 import bcground2 from '../assets/bcground2.mp4';
 import DarkMenu from './DarkMenu';
 
-function DarkHeader({ setTheme }) {
+function DarkHeader() {
 
   const darkTheme = createTheme({
     palette: {
@@ -32,7 +32,7 @@ function DarkHeader({ setTheme }) {
                 Calculator
               </Typography>
               <Box sx={{flexGrow: 1}} />
-              <DarkMenu setThemes={setTheme} />
+              <DarkMenu />
             </Toolbar>
           </AppBar>
         </ThemeProvider>

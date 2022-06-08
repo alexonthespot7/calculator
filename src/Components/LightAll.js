@@ -1,10 +1,10 @@
 import LightCalculator from "./LightCalculator";
 import LightHeader from "./LightHeader";
 
-export default function LightAll({ setTheme }) {
+export default function LightAll() {
     return (
       <>
-        <LightHeader setTheme={setTheme} />
+        <LightHeader />
         <LightCalculator />
       </>
     )

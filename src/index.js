@@ -4,11 +4,22 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import ThemeContext from './contexts/ThemeContext';
+
+function Main() {
+  const [theme, setTheme] = React.useState('dark');
+  return (
+    <React.StrictMode>
+      <ThemeContext.Provider value={{ theme, setTheme }}>
+        <App />
+      </ThemeContext.Provider>
+    </React.StrictMode>
+  )
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <Main />
 );
 
 // If you want to start measuring performance in your app, pass a function
