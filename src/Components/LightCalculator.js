@@ -148,44 +148,45 @@ export default function LightCalculator() {
   }
 
   const handleNumberClick = (newValue) => {
-    // Check if firstValue is 'NaN' and not isOperated, if true, reset firstValue
+    // Check if the firstValue is NaN and not operated, reset firstValue
     if (isNaN(firstValue) && !isOperated) {
       setFirstValue(newValue);
       return;
     }
 
-    // Determine the target value and set it based on conditions
-    let targetValue;
-    if (!isOperated) {
-      // If not operated, determine the target value based on firstValue and newValue
-      targetValue = firstValue !== '0' ? firstValue + newValue : newValue;
-      setFirstValue(targetValue);
-    } else {
-      // If operated, determine the target value based on secondValue and newValue
-      targetValue = secondValue !== '0' ? secondValue + newValue : newValue;
-      setSecondValue(targetValue);
+    // Determine the target value based on isOperated and current values
+    const targetValue = isOperated ? secondValue : firstValue;
+
+    //check if the value doesn't exceed the max_length
+    if (targetValue.length < MAX_LENGTH) {
+      if (targetValue !== '0') {
+        isOperated ? setSecondValue((prevValue) => prevValue + newValue) : setFirstValue((prevValue) => prevValue + newValue);
+      } else {
+        isOperated ? setSecondValue(newValue) : setFirstValue(newValue);
+      }
     }
   }
 
   const handleClickForZeros = () => {
-    if (firstValue !== 'NaN' || (firstValue === 'NaN' && isOperated)) {
-      if (!isOperated) {
-        if (firstValue !== '' && firstValue.length < MAX_LENGTH && firstValue !== '-') {
-          setFirstValue(prevValue => (prevValue + '0'));
-        } else if (firstValue === '-') {
-          setFirstValue('');
-        }
-      } else {
-        if (secondValue !== '0' && secondValue.length < MAX_LENGTH && secondValue !== '-') {
-          setSecondValue(prevValue => (prevValue + '0'));
-        } else if (secondValue === '-') {
-          setSecondValue('0');
-        }
+    if (isNaN(firstValue) && !isOperated) {
+      setFirstValue('');
+      return;
+    }
+
+    if (!isOperated) {
+      if (firstValue !== '' && firstValue.length < MAX_LENGTH && firstValue !== '-') {
+        setFirstValue(prevValue => (prevValue + '0'));
+      } else if (firstValue === '-') {
+        setFirstValue('');
       }
     } else {
-      setFirstValue('');
-    };
-  };
+      if (secondValue !== '0' && secondValue.length < MAX_LENGTH && secondValue !== '-') {
+        setSecondValue(prevValue => (prevValue + '0'));
+      } else if (secondValue === '-') {
+        setSecondValue('0');
+      }
+    }
+  }
 
   const handleClickForDots = () => {
     if (!isOperated) {
@@ -204,186 +205,151 @@ export default function LightCalculator() {
           setSecondValue(prevValue => (prevValue + '.'));
         }
       }
-    };
-  };
+    }
+  }
 
   const executeWithThreeValues = () => {
     setThirdValue(firstValue);
     setFirstValue(secondValue);
     setSecondValue('');
     setInitOperation(operationType);
-  };
+  }
 
   const handleOperation = (value) => {
     if (isOperated && secondValue !== '') {
-      if (value === '+' || value === '-') {
-        executeOperation();
+      // Check if the current operation is addition or subtraction,
+      // or if the previous operation was multiplication or division.
+      if (value === '+' || value === '-' || (operationType === '*' || operationType === '/')) {
+        executeOperation(); // If true, automatically execute the operation.
       } else {
-        if (operationType === '*' || operationType === '/') {
-          executeOperation();
-        } else {
-          executeWithThreeValues();
-        }
+        executeWithThreeValues(); // Otherwise, allow the initiation of a three-values operation.
       }
-    };
+    }
     setOperated(true);
     setOperation(value);
-  };
+  }
 
   const handlePlusMinus = () => {
-    if (firstValue !== 'NaN' | (firstValue === 'NaN' && isOperated)) {
-      if (!isOperated) {
-        if (firstValue[0] === '-') {
-          setFirstValue(prevValue => (prevValue.substring(1, prevValue.length)));
-        } else {
-          setFirstValue(prevValue => ('-' + prevValue));
-        }
+    if (isNaN(firstValue) && !isOperated) {
+      setFirstValue('-');
+      return;
+    }
+
+    if (!isOperated) {
+      if (firstValue[0] === '-') {
+        setFirstValue(prevValue => (prevValue.substring(1, prevValue.length)));
       } else {
-        if (secondValue[0] === '-') {
-          setSecondValue(prevValue => (prevValue.substring(1, prevValue.length)));
-        } else if (secondValue === '0') {
-          setSecondValue('-');
-        } else {
-          setSecondValue(prevValue => ('-' + prevValue));
-        }
+        setFirstValue(prevValue => ('-' + prevValue));
       }
     } else {
-      setFirstValue('-');
+      if (secondValue[0] === '-') {
+        setSecondValue(prevValue => (prevValue.substring(1, prevValue.length)));
+      } else if (secondValue === '0') {
+        setSecondValue('-');
+      } else {
+        setSecondValue(prevValue => ('-' + prevValue));
+      }
     }
-  };
+  }
 
   const executeOperation = () => {
-    if (operationType !== '') {
-      let x;
-      let y;
-      let sum = 0;
-      let flagDecimals = false;
-      let xDecimals = 0;
-      let yDecimals = 0;
+    if (operationType === '') {
+      return;
+    }
 
-      if (firstValue[firstValue.length - 1] === '.') {
-        x = Number(firstValue.slice(0, -1));
-      } else if (firstValue === '' || firstValue === '-') {
-        x = 0;
-      } else {
-        if (firstValue.includes('.')) {
-          flagDecimals = true;
-          xDecimals = firstValue.length - firstValue.indexOf('.');
-        }
-        x = Number(firstValue);
-      };
+    let firstNumber;
+    let secondNumber;
+    let sum = 0;
+    let firstDecimals = 0;
+    let secondDecimals = 0;
+    let maxDecimals = 0;
 
-      if (secondValue === '') {
-        y = x;
+    const findDecimals = (value) => {
+      if (!value.includes('.')) return 0;
+      return value.length - value.indexOf('.');
+    }
+
+    const initialFormattingToNumeric = (value) => {
+      let numericValue;
+      if (value.endsWith('.')) {
+        numericValue = Number(value.slice(0, -1));
+      } else if (value === '-') {
+        numericValue = 0;
       } else {
-        if (secondValue[secondValue.length - 1] === '.') {
-          y = Number(secondValue.slice(0, -1));
-        } else if (secondValue === '-') {
-          y = 0;
-        } else {
-          if (secondValue.includes('.')) {
-            flagDecimals = true;
-            yDecimals = secondValue.length - secondValue.indexOf('.');
-          }
-          y = Number(secondValue);
-        };
+        numericValue = Number(value);
       }
+      return numericValue;
+    }
 
-      if (operationType === '/') {
-        if (flagDecimals) {
-          if (xDecimals > yDecimals) {
-            x = Math.round(x * (10 ** (xDecimals - 1)));
-            y = Math.round(y * (10 ** (xDecimals - 1)));
-            sum = (x / y);
-          } else {
-            x = Math.round(x * (10 ** (yDecimals - 1)));
-            y = Math.round(y * (10 ** (yDecimals - 1)));
-            sum = (x / y);
-          }
-        } else {
-          sum = x / y;
-        }
-      } else if (operationType === '*') {
-        if (flagDecimals) {
-          if (xDecimals > yDecimals) {
-            x = Math.round(x * (10 ** (xDecimals - 1)));
-            y = Math.round(y * (10 ** (xDecimals - 1)));
-            sum = (x * y) / (10 ** (2 * (xDecimals - 1)));
-          } else {
-            x = Math.round(x * (10 ** (yDecimals - 1)));
-            y = Math.round(y * (10 ** (yDecimals - 1)));
-            sum = (x * y) / (10 ** (2 * (yDecimals - 1)));
-          }
-        } else {
-          sum = x * y;
-        }
-      } else if (operationType === '-') {
-        if (flagDecimals) {
-          if (xDecimals > yDecimals) {
-            x = Math.round(x * (10 ** (xDecimals - 1)));
-            y = Math.round(y * (10 ** (xDecimals - 1)));
-            sum = (x - y) / (10 ** (xDecimals - 1));
-          } else {
-            x = Math.round(x * (10 ** (yDecimals - 1)));
-            y = Math.round(y * (10 ** (yDecimals - 1)));
-            sum = (x - y) / (10 ** (yDecimals - 1));
-          }
-        } else {
-          sum = x - y;
-        }
-      } else if (operationType === '+') {
-        if (flagDecimals) {
-          if (xDecimals > yDecimals) {
-            x = Math.round(x * (10 ** (xDecimals - 1)));
-            y = Math.round(y * (10 ** (xDecimals - 1)));
-            sum = (x + y) / (10 ** (xDecimals - 1));
-          } else {
-            x = Math.round(x * (10 ** (yDecimals - 1)));
-            y = Math.round(y * (10 ** (yDecimals - 1)));
-            sum = (x + y) / (10 ** (yDecimals - 1));
-          }
-        } else {
-          sum = x + y;
-        }
-      };
+    if (firstValue === '') {
+      firstNumber = 0;
+    } else {
+      firstNumber = initialFormattingToNumeric(firstValue);
+      firstDecimals = findDecimals(String(firstNumber));
+    }
 
-      sum = String(sum);
+    if (secondValue === '') {
+      secondNumber = firstNumber;
+    } else {
+      secondNumber = initialFormattingToNumeric(secondValue);
+      secondDecimals = findDecimals(String(secondNumber));
+    }
 
-      if (sum.includes('e')) {
-        sum = 'NaN';
+    maxDecimals = Math.max(firstDecimals, secondDecimals);
+
+    let factor = 1;
+
+    //if decimals are in the values let's first make them integers for the accuracy of the calculations
+    if (maxDecimals > 0) {
+      factor = 10 ** (maxDecimals - 1);
+      firstNumber = Math.round(firstNumber * factor);
+      secondNumber = Math.round(secondNumber * factor);
+    }
+
+    if (operationType === '/') {
+      sum = firstNumber / secondNumber;
+    } else if (operationType === '*') {
+      sum = (firstNumber * secondNumber) / (factor ** 2);
+    } else if (operationType === '+') {
+      sum = (firstNumber + secondNumber) / factor;
+    } else if (operationType === '-') {
+      sum = (firstNumber - secondNumber) / factor;
+    }
+
+    sum = String(sum);
+
+    //handle sum edge cases
+    if (sum.includes('e') || sum === 'Infinity' || sum === '-Infinity') {
+      sum = 'NaN';
+    } else if (sum.length > MAX_LENGTH) {
+      if (sum.includes('.')) {
+        if (sum.indexOf('.') === MAX_LENGTH - 1) {
+          sum = String(Math.round(Number(sum)));
+        } else {
+          sum = sum.substring(0, MAX_LENGTH);
+        }
       } else {
-        if (sum.length > MAX_LENGTH) {
-          if (sum.includes('.')) {
-            if (sum.indexOf('.') === MAX_LENGTH - 1) {
-              sum = String(Math.round(Number(sum)));
-            } else {
-              sum = sum.substring(0, MAX_LENGTH);
-            }
-          } else {
-            sum = 'NaN';
-          }
-        } else if (sum === 'Infinity' || sum === '-Infinity') {
-          sum = 'NaN';
-        } else if (sum === '0') {
-          sum = '';
-        }
-      };
+        sum = 'NaN';
+      }
+    } else if (sum === '0') {
+      sum = '';
+    }
 
-      if (initialOperation !== '' && sum !== 'NaN') {
-        if (sum === '') {
-          sum = '0';
-        };
-        sum = executionThree(sum);
-        setInitOperation('');
-        setThirdValue('');
-      };
+    //check if there should be executed operation with three values
+    if (initialOperation !== '' && sum !== 'NaN') {
+      if (sum === '') {
+        sum = '0';
+      }
+      sum = executionThree(sum);
+      setInitOperation('');
+      setThirdValue('');
+    }
 
-      setOperated(false);
-      setOperation('');
-      setFirstValue(sum);
-      setSecondValue('');
-    };
-  };
+    setOperated(false);
+    setOperation('');
+    setFirstValue(sum);
+    setSecondValue('');
+  }
 
   const executionThree = (secVal) => {
     let x;
