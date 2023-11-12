@@ -2,8 +2,8 @@ import './App.css';
 
 import { useContext } from 'react';
 
-import DarkAll from './Components/DarkAll';
-import LightAll from './Components/LightAll';
+import DarkContent from './Components/DarkContent';
+import LightContent from './Components/LightContent';
 
 import ThemeContext from './contexts/ThemeContext';
 
@@ -12,10 +12,10 @@ function App() {
 
   return (
     <div className='App'>
-      {theme==='dark' && <DarkAll />}
-      {theme==='light' && <LightAll />}
+      {theme === 'dark' && <DarkContent />}
+      {theme === 'light' && <LightContent />}
     </div>
-    
+
   );
 }
 
