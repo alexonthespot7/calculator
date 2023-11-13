@@ -1,21 +1,19 @@
+import React from 'react';
+
 import './App.css';
-
-import { useContext } from 'react';
-
-import DarkContent from './Components/DarkContent';
-import LightContent from './Components/LightContent';
-
 import ThemeContext from './contexts/ThemeContext';
 
+import Content from './Components/Content';
+
 function App() {
-  const { theme } = useContext(ThemeContext);
+  const [theme, setTheme] = React.useState('dark');
 
   return (
-    <div className='App'>
-      {theme === 'dark' && <DarkContent />}
-      {theme === 'light' && <LightContent />}
-    </div>
-
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <div className='App'>
+        <Content />
+      </div>
+    </ThemeContext.Provider>
   );
 }
 
