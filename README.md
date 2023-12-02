@@ -5,12 +5,18 @@
 > You can find the final version of the application [_here_](https://calculator-alex7.netlify.app).
 
 ## Table of Contents
-* [Technologies Used](#technologies-used)
+* [Usage Guide](#usage-guide)
 * [Features](#features)
+* [Technologies Used](#technologies-used)
 * [Screenshots](#screenshots)
 
-## Technologies Used
-- React.js
+## Usage Guide
+1. Clone the project <br>```git clone https://github.com/alexonthespot7/calculator.git```<br>
+2. run the following command in a terminal window (in the complete) directory:<br>
+```npm install```<br>
+3. run the following command in a terminal window (in the complete) directory:<br>
+```npm start```<br>
+4. Navigate to localhost:3000
 
 ## Features
 - Dual Themes: Choose between a Light theme, reminiscent of Windows calculator, and a Dark theme inspired by the iPhone calculator.
@@ -20,6 +26,10 @@
 - Responsive Design: Enjoy a consistent experience across devices, with dynamic backgrounds – videos for computers and images for mobiles.
 
 - Versatile Backgrounds: Backgrounds adapt to the device, providing an immersive environment with videos on computers and personalized images on mobile devices.
+
+## Technologies Used
+- React.js
+- css
 
 ## Screenshots
 <p align="center">
